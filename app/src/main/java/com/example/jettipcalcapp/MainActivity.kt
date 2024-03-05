@@ -75,6 +75,25 @@ fun TopHeader(totalPerPerson: Double = 0.0){
     }
 }
 
+
+
+@Preview
+@Composable
+fun MainContent(){
+    Surface(
+         modifier = Modifier
+             .padding(2.dp)
+             .fillMaxWidth(),
+         shape = RoundedCornerShape(corner = CornerSize(8.dp)),
+         border = BorderStroke(width = 2.dp, color = Color.LightGray)
+    ) {
+         Column() {
+             Text(text = "yourmom!")
+         }
+    }
+
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
