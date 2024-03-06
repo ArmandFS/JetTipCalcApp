@@ -1,6 +1,7 @@
 package com.example.jettipcalcapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -30,13 +32,15 @@ import androidx.compose.ui.unit.dp
 import com.example.jettipcalcapp.components.InputField
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
+@OptIn(ExperimentalComposeUiApi::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyApp {
-                TopHeader()
+                //TopHeader()
                 MainContent()
+
             }
 
         }
@@ -82,9 +86,20 @@ fun TopHeader(totalPerPerson: Double = 0.0){
     }
 }
 
+@ExperimentalComposeUiApi
 @Preview
 @Composable
 fun MainContent(){
+    BillForm(){billAmt ->
+        Log.d("AMT", "MainContent: ${billAmt.toInt()}")
+    }
+
+}
+@ExperimentalComposeUiApi
+@Composable
+fun BillForm(modifier: Modifier = Modifier,
+             onValChange: (String) -> Unit = {}
+    ){
     val totalBillState = remember {
         mutableStateOf("")
     }
@@ -94,28 +109,28 @@ fun MainContent(){
         totalBillState.value.trim().isNotEmpty()
     }
     val keyboardController = LocalSoftwareKeyboardController.current
-
     Surface(
-         modifier = Modifier
-             .padding(2.dp)
-             .fillMaxWidth(),
-         shape = RoundedCornerShape(corner = CornerSize(8.dp)),
-         border = BorderStroke(width = 2.dp, color = Color.LightGray)
+        modifier = Modifier
+            .padding(2.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(corner = CornerSize(8.dp)),
+        border = BorderStroke(width = 2.dp, color = Color.LightGray)
     ) {
-         Column {
-             InputField(
-                 valueState = totalBillState,
-                 labelId = "Enter Bill",
-                 enabled = true,
-                 isSingleLine = true,
-                 onAction = KeyboardActions{
-                     //enter something that is valid for the keyboard actions
-                     if (!validState) return@KeyboardActions
-                     //Todo - onvaluechanged
-                     keyboardController?.hide()
-                 }
-             )
-         }
+        Column {
+            InputField(
+                valueState = totalBillState,
+                labelId = "Enter Bill",
+                enabled = true,
+                isSingleLine = true,
+                onAction = KeyboardActions{
+                    //enter something that is valid for the keyboard actions
+                    if (!validState) return@KeyboardActions
+                    onValChange(totalBillState.value.trim())
+                    //Todo - onvaluechanged
+                    keyboardController?.hide()
+                }
+            )
+        }
     }
 }
 
