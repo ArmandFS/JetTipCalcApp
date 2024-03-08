@@ -121,8 +121,12 @@ fun BillForm(modifier: Modifier = Modifier,
         //slider value will be float
         mutableStateOf(0f)
     }
+    val tipPercentage = (sliderPositionState.value)
+    val splitByState = remember {
+        mutableStateOf(1)
+    }
+    val range = IntRange(start = 1, endInclusive = 1000)
     TopHeader()
-
     Surface(
         modifier = Modifier
             .padding(2.dp)
@@ -155,12 +159,15 @@ fun BillForm(modifier: Modifier = Modifier,
                         horizontalArrangement = Arrangement.End){
                         RoundIconButton(
                             imageVector = Icons.Default.Remove,
-                            onClick = { /*TODO*/ })
-                        Text(text = "3",
+                            //input logic math functions here to count
+                            onClick = {
+                                splitByState.value =
+                                    if (splitByState.value > 1) splitByState.value - 1
+                                    else 1
+                            })
+                        Text(text = "${splitByState.value}",
                              modifier = Modifier
-                                 .align(
-                                     Alignment.CenterVertically
-                                 )
+                                 .align(Alignment.CenterVertically)
                                  .padding(
                                      start = 9.dp,
                                      end = 9.dp
@@ -168,7 +175,12 @@ fun BillForm(modifier: Modifier = Modifier,
                         )
                         RoundIconButton(
                             imageVector = Icons.Default.Add,
-                            onClick = { /*TODO*/ })
+                            onClick = {
+                                //increment range and add 1
+                                if (splitByState.value < range.last){
+                                    splitByState.value = splitByState.value + 1
+                                }
+                            })
                     }
                 }
 
@@ -185,7 +197,7 @@ fun BillForm(modifier: Modifier = Modifier,
             }
             Column (verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally){
-                    Text(text = "33%")
+                    Text(text = "$tipPercentage%")
                     Spacer(modifier = Modifier.height(14.dp))
                     //put slider mechanic
                     Slider(value = sliderPositionState.value,
@@ -217,5 +229,4 @@ fun DefaultPreview() {
         }
     }
 }
-
 
