@@ -73,6 +73,7 @@ fun MyApp(content: @Composable ()-> Unit) {
 fun TopHeader(totalPerPerson: Double = 0.0){
     Surface(modifier = Modifier
         .fillMaxWidth()
+        .padding(15.dp)
         .height(150.dp)
         .clip(shape = RoundedCornerShape(corner = CornerSize(12.dp))),
         color = Color(0xFFE9D7F7)
@@ -101,7 +102,6 @@ fun MainContent(){
     BillForm{billAmt ->
         Log.d("AMT", "MainContent: ${billAmt.toInt()}")
     }
-
 }
 @ExperimentalComposeUiApi
 @Composable
@@ -121,6 +121,7 @@ fun BillForm(modifier: Modifier = Modifier,
         //slider value will be float
         mutableStateOf(0f)
     }
+    TopHeader()
 
     Surface(
         modifier = Modifier
@@ -191,7 +192,16 @@ fun BillForm(modifier: Modifier = Modifier,
                            onValueChange = {newVal ->
                                sliderPositionState.value = newVal
                                Log.d("Slider", "BillForm: $newVal")
-                           } )
+                           },
+                        modifier = Modifier.padding(
+                            start = 16.dp,
+                            end =  16.dp),
+                        //pass integer here for steps in slider
+                        //this can also work as a callback
+                        steps = 5,
+                        onValueChangeFinished = {
+                        }
+                    )
             }
             //}else{
                // Box(){}
@@ -207,3 +217,5 @@ fun DefaultPreview() {
         }
     }
 }
+
+
