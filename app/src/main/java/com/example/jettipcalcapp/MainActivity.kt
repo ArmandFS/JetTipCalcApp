@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jettipcalcapp.components.InputField
 import com.example.jettipcalcapp.ui.theme.JetTipCalcAppTheme
+import com.example.jettipcalcapp.util.calculateTotalTip
 import com.example.jettipcalcapp.widgets.RoundIconButton
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -126,6 +127,10 @@ fun BillForm(modifier: Modifier = Modifier,
         mutableStateOf(1)
     }
     val range = IntRange(start = 1, endInclusive = 1000)
+    val tipAmountState = remember {
+          mutableStateOf(0.0)
+    }
+
     TopHeader()
     Surface(
         modifier = Modifier
@@ -192,18 +197,21 @@ fun BillForm(modifier: Modifier = Modifier,
                 Text(text = "Tip",
                      modifier = Modifier.align(alignment = Alignment.CenterVertically))
                 Spacer(modifier = Modifier.width(200.dp))
-                Text(text = "$33.00",
+                Text(text = "$ ${tipAmountState.value}",
                      modifier = Modifier.align(alignment = Alignment.CenterVertically))
             }
             Column (verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally){
-                    Text(text = "$tipPercentage%")
+                    Text(text = "$tipPercentage %")
                     Spacer(modifier = Modifier.height(14.dp))
                     //put slider mechanic
                     Slider(value = sliderPositionState.value,
                            onValueChange = {newVal ->
                                sliderPositionState.value = newVal
-                               Log.d("Slider", "BillForm: $newVal")
+                               tipAmountState.value =
+                                   calculateTotalTip(totalBill = totalBillState.value.toDouble(),
+                                                     tipPercentage = tipPercentage.toInt()
+                                   )
                            },
                         modifier = Modifier.padding(
                             start = 16.dp,
@@ -220,6 +228,9 @@ fun BillForm(modifier: Modifier = Modifier,
             }
         }
 }
+
+
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -229,4 +240,3 @@ fun DefaultPreview() {
         }
     }
 }
-
