@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jettipcalcapp.components.InputField
 import com.example.jettipcalcapp.ui.theme.JetTipCalcAppTheme
+import com.example.jettipcalcapp.util.calculateTotalPerPerson
 import com.example.jettipcalcapp.util.calculateTotalTip
 import com.example.jettipcalcapp.widgets.RoundIconButton
 
@@ -47,17 +49,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApp {
-                //TopHeader()
+                TopHeader()
                 MainContent()
-
             }
-
         }
     }
 }
-
 @Composable
-//this will expect and return a composable function
 fun MyApp(content: @Composable ()-> Unit) {
     JetTipCalcAppTheme {
         // A surface container using the 'background' color from the theme
@@ -100,8 +98,10 @@ fun TopHeader(totalPerPerson: Double = 0.0){
 @Preview
 @Composable
 fun MainContent(){
-    BillForm{billAmt ->
-        Log.d("AMT", "MainContent: ${billAmt.toInt()}")
+    Column(modifier = Modifier.padding(all = 12.dp)) {
+        BillForm{billAmt ->
+            Log.d("AMT", "MainContent: ${billAmt.toInt()}")
+        }
     }
 }
 @ExperimentalComposeUiApi
@@ -130,8 +130,10 @@ fun BillForm(modifier: Modifier = Modifier,
     val tipAmountState = remember {
           mutableStateOf(0.0)
     }
-
-    TopHeader()
+    val totalPerPersonState = remember {
+        mutableStateOf(0.0)
+    }
+    TopHeader(totalPerPerson = totalPerPersonState.value)
     Surface(
         modifier = Modifier
             .padding(2.dp)
@@ -154,7 +156,7 @@ fun BillForm(modifier: Modifier = Modifier,
                     //Todo - onvaluechanged
                     keyboardController?.hide()
                 })
-            //if (validState) {
+            if (validState) {
                 Row(modifier = Modifier.padding(3.dp),
                     horizontalArrangement = Arrangement.Start) {
                     Text(text = "Split",
@@ -167,8 +169,11 @@ fun BillForm(modifier: Modifier = Modifier,
                             //input logic math functions here to count
                             onClick = {
                                 splitByState.value =
-                                    if (splitByState.value > 1) splitByState.value - 1
-                                    else 1
+                                    if (splitByState.value > 1) splitByState.value - 1 else 1
+                                totalPerPersonState.value = calculateTotalPerPerson(
+                                    totalBill = totalBillState.value.toDouble(),
+                                    splitBy = splitByState.value,
+                                    tipPercentage = tipPercentage.toInt())
                             })
                         Text(text = "${splitByState.value}",
                              modifier = Modifier
@@ -184,11 +189,14 @@ fun BillForm(modifier: Modifier = Modifier,
                                 //increment range and add 1
                                 if (splitByState.value < range.last){
                                     splitByState.value = splitByState.value + 1
+                                    totalPerPersonState.value = calculateTotalPerPerson(
+                                        totalBill = totalBillState.value.toDouble(),
+                                        splitBy = splitByState.value,
+                                        tipPercentage = tipPercentage.toInt())
                                 }
                             })
                     }
                 }
-
             //tip row
             Row(modifier = Modifier
                 .padding(horizontal = 3.dp,
@@ -208,10 +216,13 @@ fun BillForm(modifier: Modifier = Modifier,
                     Slider(value = sliderPositionState.value,
                            onValueChange = {newVal ->
                                sliderPositionState.value = newVal
-                               tipAmountState.value =
-                                   calculateTotalTip(totalBill = totalBillState.value.toDouble(),
-                                                     tipPercentage = tipPercentage.toInt()
-                                   )
+                               tipAmountState.value = calculateTotalTip(
+                                                     totalBill = totalBillState.value.toDouble(),
+                                                     tipPercentage = tipPercentage.toInt())
+                               totalPerPersonState.value = calculateTotalPerPerson(
+                                                           totalBill = totalBillState.value.toDouble(),
+                                                           splitBy = splitByState.value,
+                                                           tipPercentage = tipPercentage.toInt())
                            },
                         modifier = Modifier.padding(
                             start = 16.dp,
@@ -223,14 +234,12 @@ fun BillForm(modifier: Modifier = Modifier,
                         }
                     )
             }
-            //}else{
-               // Box(){}
+            }else{
+                Box(){}
+            }
             }
         }
 }
-
-
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
