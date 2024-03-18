@@ -1,5 +1,6 @@
 package com.example.jettipcalcapp
 
+//import all androidx compose libraries and necessary packages
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,6 +44,8 @@ import com.example.jettipcalcapp.util.calculateTotalPerPerson
 import com.example.jettipcalcapp.util.calculateTotalTip
 import com.example.jettipcalcapp.widgets.RoundIconButton
 
+
+//experimental API
 @OptIn(ExperimentalComposeUiApi::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +58,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+//main app function
 @Composable
 fun MyApp(content: @Composable ()-> Unit) {
     JetTipCalcAppTheme {
@@ -66,6 +70,7 @@ fun MyApp(content: @Composable ()-> Unit) {
         }
     }
 }
+
 @Preview
 @Composable
 //pass in data for the topheader
